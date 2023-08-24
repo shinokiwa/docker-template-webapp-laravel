@@ -1,0 +1,79 @@
+#
+# 開発環境構築用composeファイル
+#
+version: '3.8'
+
+services:
+    # リバースプロキシのためのNginx
+    nginx:
+        image: nginx:1.25.2
+        ports:
+            - target: 80
+              published: 8080
+              protocol: tcp
+              mode: host
+        volumes:
+            - type: bind
+              source: "./nginx/etc/nginx/nginx.conf"
+              target: "/etc/nginx/nginx.conf"
+        depends_on:
+            - php
+            - vite
+        restart: "no"
+
+    # PHP実行コンテナ
+    php:
+        image: php:8.2-fpm-alpine3.18
+        volumes:
+            - type: bind
+              source: "../src/backend"
+              target: "/var/www"
+            - type: bind
+              source: "./php/usr/local/etc/php-fpm.d/www.conf"
+              target: "/usr/local/etc/php-fpm.d/www.conf"
+            - type: volume
+              source: php-vendor-volume
+              target: "/var/www/vendor"
+        depends_on:
+            - devcontainer
+        restart: "no"
+
+    # Vite実行コンテナ
+    vite:
+        image: node:20.5.1
+        volumes:
+            - type: bind
+              source: "../src/frontend"
+              target: "/var/www/"
+            - type: volume
+              source: node-modules-volume
+              target: "/var/www/node_modules"
+        working_dir: /var/www
+        command: sh -c "npm run dev"
+        depends_on:
+            - devcontainer
+        restart: "no"
+
+    # 作業用コンテナ
+    devcontainer:
+        build:
+            context: ../
+            dockerfile: ./.devcontainer/Dockerfile
+        environment:
+            - DEBUG=app:*
+        volumes:
+            - type: bind
+              source: "../"
+              target: "/workspace/"
+            - type: volume
+              source: php-vendor-volume
+              target: "/workspace/src/backend/vendor"
+            - type: volume
+              source: node-modules-volume
+              target: "/workspace/src/frontend/node_modules"
+
+volumes:
+    # php-fpmと作業用コンテナで共有するためボリューム化。本来はイメージに組み込めばよいので本番系では不要。
+    php-vendor-volume:
+    # viteと作業用コンテナで共有するためボリューム化。本来はビルド後の静的ファイルをNginxに組み込むため本番系では不要。
+    node-modules-volume:

@@ -1,23 +1,19 @@
-/vendor/
-node_modules/
-npm-debug.log
-yarn-error.log
+# Laravel
+/src/backend/vendor
+/src/backend/bootstrap/cache/
+/src/backend/storage/*
+!/src/backend/storage/.gitkeep
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
+# Vue.js
+/src/frontend/node_modules
+/src/frontend/dist
 
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
-
-# Laravel 5 & Lumen specific with changed public path
-public_html/storage
-public_html/hot
-
-storage/*.key
+# 汎用
 .env
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.result.cache
+.env.backup
+.env.production
+.idea
+package-lock.json
+yarn.lock
+composer.lock
+*.cache

@@ -1,0 +1,17 @@
+{
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "devcontainer",
+	"workspaceFolder": "/workspace",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"EditorConfig.EditorConfig",
+				"bmewburn.vscode-intelephense-client",
+                "Vue.volar",
+                "Vue.vscode-typescript-vue-plugin",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
+			]
+		}
+	}
+}
