@@ -36,6 +36,7 @@ services:
               target: "/var/www/vendor"
         depends_on:
             - devcontainer
+            - mariadb
         restart: "no"
 
     # Vite実行コンテナ
@@ -50,6 +51,25 @@ services:
               target: "/var/www/node_modules"
         working_dir: /var/www
         command: sh -c "npm run dev"
+        depends_on:
+            - devcontainer
+        restart: "no"
+
+    # MariaDB実行コンテナ
+    mariadb:
+        image: mariadb:11.0.3
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: app
+            MYSQL_USER: app
+            MYSQL_PASSWORD: app
+        volumes:
+            - type: volume
+              source: mariadb-data-volume
+              target: /var/lib/mysql
+            - type: bind
+              source: ../src/database/initdb.d/
+              target: /docker-entrypoint-initdb.d/
         depends_on:
             - devcontainer
         restart: "no"
@@ -77,3 +97,5 @@ volumes:
     php-vendor-volume:
     # viteと作業用コンテナで共有するためボリューム化。本来はビルド後の静的ファイルをNginxに組み込むため本番系では不要。
     node-modules-volume:
+    # データベース永続化用ボリューム
+    mariadb-data-volume:
